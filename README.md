@@ -1,1 +1,1 @@
-# projet-informatique
+# projet_informatique
