@@ -195,10 +195,50 @@
             } else if (selectedCompany === "airfrance") {
                 graph1Title.textContent = "Graphique pour Air France";
             }
-
+t
             // Ici, tu pourrais ajouter du code pour changer dynamiquement les graphiques
             // Exemple avec une bibliothèque comme Chart.js ou D3.js pour actualiser le graphique
         }
     </script>
 </body>
 </html>
+
+
+// à partir d'ici on met le logo
+
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image dans une case</title>
+    <style>
+        .container {
+            width: 450px;
+            height: 100px;
+            border: 2px solid transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: absolute;
+            top: 5px; /* xpx depuis le haut */
+            left: -89px; /* ypx depuis la gauche */
+        }
+
+        .container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+//ici il y a mon points d'accès
+        <img src="Images\LogoPrediStock.png" alt="Description de l'image">
+    </div>
+</body>
+</html>
+
