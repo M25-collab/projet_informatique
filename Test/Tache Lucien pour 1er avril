@@ -1,1 +1,84 @@
+Pour afficher un résumé de tweets dans un rectangle sur une page web, voici comment procéder :
 
+    Créer une div contenant les tweets
+    Cette div sera stylisée pour apparaître sous forme de rectangle.
+
+    Utiliser du CSS pour le design
+    Ajout de bordures, ombres et dimensions pour bien encadrer la section.
+
+    Scraper les tweets depuis X (anciennement Twitter)
+
+        L'API officielle de X (Twitter API v2) est recommandée.
+
+        Sinon, un script Python avec BeautifulSoup ou Selenium peut être utilisé pour extraire les tweets.
+
+    Intégrer les tweets dans le site
+
+        Soit en insérant les tweets dynamiquement avec JavaScript.
+
+        Soit en générant une page statique après scrap.
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résumé des Tweets</title>
+    <style>
+        #tweet-container {
+            width: 400px;
+            height: 300px;
+            border: 2px solid #1DA1F2;
+            padding: 10px;
+            border-radius: 10px;
+            overflow-y: auto;
+            background-color: #f5f8fa;
+        }
+        .tweet {
+            padding: 8px;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Résumé des Tweets</h2>
+    <div id="tweet-container">
+        <p>Chargement des tweets...</p>
+    </div>
+
+    <script>
+        async function fetchTweets() {
+            try {
+                // Remplacez cette URL par celle de votre API backend qui fait le scrap
+                const response = await fetch("http://votre-api/tweets");
+                const tweets = await response.json();
+                
+                const container = document.getElementById("tweet-container");
+                container.innerHTML = ""; // Effacer le texte de chargement
+                
+                tweets.forEach(tweet => {
+                    const div = document.createElement("div");
+                    div.className = "tweet";
+                    div.textContent = tweet.text; // Affiche le contenu du tweet
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                console.error("Erreur lors de la récupération des tweets :", error);
+            }
+        }
+
+        fetchTweets();
+    </script>
+
+</body>
+</html>
