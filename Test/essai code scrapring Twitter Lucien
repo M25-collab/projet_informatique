@@ -1,0 +1,112 @@
+Ce dont tu as besoin :
+
+    Un compte développeur Twitter/X → pour avoir une Bearer Token
+
+    Un fichier .env avec :
+
+    BEARER_TOKEN=ton_token
+
+
+
+    
+
+✅ Code Python complet (scraper.py) :
+
+import requests
+import os
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
+
+# Chargement du token depuis .env
+load_dotenv()
+BEARER_TOKEN = os.getenv("BEARER_TOKEN")
+
+# Comptes à scraper
+ACCOUNTS = {
+    "LOreal": "LOrealGroupe",
+    "AirFrance": "airfrance",
+    "Danone": "Danone"
+}
+
+# Mots clés
+NEGATIVE_WORDS = [mot.lower() for mot in [
+    "Guerre", "Conflit", "Récession", "Inflation", "Crise économique", "Panne", "Grève", "Licenciements",
+    "Réduction des coûts", "Réduction des effectifs", "Fermeture d'usine", "Détérioration", "Incertitude", "Perte",
+    "Faillite", "Scandale", "Retard", "Suspension", "Dépôt de bilan", "Chômage", "Problèmes de production",
+    "Plan de restructuration", "Mauvais résultats", "Abandon de projet", "Pollution", "Manque de financement",
+    "Concurrence accrue", "Instabilité", "Déclin", "Crise de confiance", "Ralentissement", "Embargo", "Désastre",
+    "Controverse", "Disruption", "Contraction", "Scandale fiscal", "Non-conformité", "Mauvaise performance",
+    "Rétrogradation", "Mauvaise gestion", "Non-rentabilité", "Retards significatifs", "Dissolution de partenariat",
+    "Impact environnemental négatif", "Démission du PDG", "Départ d'un cadre clé", "Appels à la liquidation",
+    "Perte de contrats majeurs", "Dérives éthiques"
+]]
+
+POSITIVE_WORDS = [mot.lower() for mot in [
+    "Bons résultats", "Croissance", "Succès", "Innovation", "Révolutionnaire", "Expansion", "Rentabilité",
+    "Part de marché", "Leadership", "Nouveau produit", "Collaboration fructueuse", "Forte demande",
+    "Augmentation des bénéfices", "Nouveaux contrats", "Augmentation des ventes", "Augmentation de la production",
+    "Bonnes perspectives", "Récompense", "Réalisation", "Partenariat stratégique", "Recrutement renforcé",
+    "Confiance", "Durabilité", "Prise de leadership", "Investissement fructueux", "Valeur ajoutée",
+    "Expansion internationale", "Développement", "Réussite", "Excellence", "Soutien gouvernemental",
+    "Amélioration", "Performance exceptionnelle", "Progrès", "Rentabilité durable", "Remboursement de dette",
+    "Relations publiques positives", "Innovation technologique", "Récupération rapide", "Progrès exceptionnels",
+    "Croissance exponentielle", "Innovation de rupture", "Leadership sur le marché", "Partenariat gagnant-gagnant",
+    "Prise de part de marché", "Recrutement d'experts", "Augmentation de la rentabilité", "Récupération post-crise"
+]]
+
+def get_user_id(username):
+    url = f"https://api.twitter.com/2/users/by/username/{username}"
+    headers = {"Authorization": f"Bearer {BEARER_TOKEN}"}
+    response = requests.get(url, headers=headers)
+    return response.json()["data"]["id"]
+
+def get_tweets(user_id):
+    now = datetime.utcnow()
+    start_time = (now - timedelta(hours=24)).isoformat("T") + "Z"
+    url = f"https://api.twitter.com/2/users/{user_id}/tweets"
+    params = {
+        "max_results": 10,
+        "start_time": start_time,
+        "tweet.fields": "created_at,text"
+    }
+    headers = {"Authorization": f"Bearer {BEARER_TOKEN}"}
+    response = requests.get(url, headers=headers, params=params)
+    return response.json().get("data", [])
+
+def analyze_sentiment(text):
+    text = text.lower()
+    score = 0
+    for word in POSITIVE_WORDS:
+        if word in text:
+            score += 1
+    for word in NEGATIVE_WORDS:
+        if word in text:
+            score -= 1
+    if score > 0:
+        return 1
+    elif score < 0:
+        return -1
+    return 0
+
+def run_scraper():
+    print(f"Scraping lancé à {datetime.now()}\n")
+    for company, username in ACCOUNTS.items():
+        print(f"--- {company} (@{username}) ---")
+        try:
+            user_id = get_user_id(username)
+            tweets = get_tweets(user_id)
+            for tweet in tweets:
+                score = analyze_sentiment(tweet["text"])
+                print(f"[{tweet['created_at']}] Score={score} → {tweet['text']}\n")
+        except Exception as e:
+            print(f"Erreur pour {company}: {e}")
+
+if __name__ == "__main__":
+    run_scraper()
+    input("Fin du scraping. Appuie sur Entrée pour quitter.")
+
+    
+
+📝 Fichier .env (dans le même dossier)
+
+BEARER_TOKEN=ton_token_ici
