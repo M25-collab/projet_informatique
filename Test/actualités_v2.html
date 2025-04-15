@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualités - PredictStock</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #080808;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        nav ul li a:hover {
+            color: #00FF00;
+        }
+
+        .news-container {
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        .news-item {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .news-item h2 {
+            color: #333;
+        }
+
+        .news-item p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .news-item .date {
+            font-size: 0.9rem;
+            color: #999;
+            margin-top: 10px;
+        }
+
+        .news-item a {
+            text-decoration: none;
+            color: #00FF00;
+            font-weight: bold;
+        }
+
+        .news-item a:hover {
+            color: #007700;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Actualités Boursières</h1>
+</header>
+
+<nav>
+    <ul>
+        <li><a href="utilisateurs.html">Utilisateurs</a></li>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="actualités.html">Actualités</a></li>
+        <li><a href="ressources.html">Ressources</a></li>
+    </ul>
+</nav>
+
+<div class="news-container">
+    
+<!-- Début de la section Actualités Géopolitiques -->
+<section class="news-item" id="geopolitique">
+    <h2>Actualités Géopolitiques</h2>
+    <!-- Div pour afficher la première ligne d'actualité -->
+    <div id="actu-geopo-1">Chargement de l'actualité 1…</div>
+    <!-- Div pour afficher la deuxième ligne d'actualité -->
+    <div id="actu-geopo-2">Chargement de l'actualité 2…</div>
+    <!-- Div pour afficher la troisième ligne d'actualité -->
+    <div id="actu-geopo-3">Chargement de l'actualité 3…</div>
+</section>
+<!-- Fin de la section Actualités Géopolitiques -->
+
+<!-- Script JavaScript pour récupérer les données depuis Actu_Geopo.py -->
+<!-- Remplace ton script JavaScript par celui-ci -->
+<script>
+    /*
+       On utilise fetch() pour demander les actualités au serveur Flask (AppGeopo.py).
+       Assure-toi que le serveur tourne bien sur localhost:5000
+    */
+    fetch('http://localhost:5000/actu')
+        .then(response => response.json())
+        .then(data => {
+            // Affiche jusqu’à 3 actualités si disponibles
+            document.getElementById('actu-geopo-1').innerHTML = data[0]?.texte || "Pas d'actualité 1";
+            document.getElementById('actu-geopo-2').innerHTML = data[1]?.texte || "Pas d'actualité 2";
+            document.getElementById('actu-geopo-3').innerHTML = data[2]?.texte || "Pas d'actualité 3";
+        })
+        .catch(error => {
+            console.error('Erreur lors de la récupération des actualités:', error);
+            document.getElementById('actu-geopo-1').innerHTML = "Erreur de chargement";
+            document.getElementById('actu-geopo-2').innerHTML = "Erreur de chargement";
+            document.getElementById('actu-geopo-3').innerHTML = "Erreur de chargement";
+        });
+</script>
+
+
+
+
+
+   
+</div>
+
+<footer>
+    <p>&copy; 2025 PredictStock - Tous droits réservés</p>
+</footer>
+
+</body>
+</html>

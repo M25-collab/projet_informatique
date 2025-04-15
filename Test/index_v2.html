@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PredictStock</title>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        header {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        nav ul li a:hover {
+            color: #00FF00;
+        }
+
+        .main-content {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px;
+        }
+
+        .graph {
+            width: 48%;
+            height: 300px;
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        #dropdown {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .actualites {
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-radius: 8px;
+        }
+
+        .actualites h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .actualites p {
+            font-size: 18px;
+        }
+
+        /* Rectangle pour chaque article */
+        .article-box {
+            border: 2px solid #ccc;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .article-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+
+        footer ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        footer ul li {
+            margin-right: 20px;
+        }
+
+        footer ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        footer ul li a:hover {
+            color: #00ff0d;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>PredictStock</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="utilisateurs.html">Utilisateurs</a></li>
+            <li><a href="index.html">Accueil</a></li>
+            <li><a href="actualités.html">Actualités</a></li>
+            <li><a href="ressources.html">Ressources</a></li>
+        </ul>
+    </nav>
+
+    <section class="main-content">
+        <div class="graph" id="graph1">
+            <div id="dropdown">
+                <select id="companySelect" onchange="updateGraph()">
+                    <option value="danone">Danone</option>
+                    <option value="loreal">L'Oréal</option>
+                    <option value="airfrance">Air France</option>
+                </select>
+            </div>
+            <p id="graph1Title">Graphique pour Danone</p>
+        </div>
+
+        <div class="graph" id="graph2">
+            <p>Graphique pour les 3 entreprises (Danone, L'Oréal, Air France)</p>
+        </div>
+    </section>
+
+    <!-- Section des actualités avec les titres d’articles -->
+    <section class="actualites" id="actualités">
+        <h2>Actualités Boursières</h2>
+        <p>Dernières nouvelles boursières :</p>
+        <div id="articles-container">
+            <!-- Les rectangles dynamiques apparaîtront ici -->
+        </div>
+    </section>
+
+    <section id="ressources">
+        <h2>Ressources</h2>
+        <p>Dernières actualités en bourse.</p>
+    </section>
+
+    <footer>
+        <ul>
+            <li><a href="#">Mentions légales</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Réseaux sociaux</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Support</a></li>
+        </ul>
+        <p>&copy; 2025 PredictStock. Tous droits réservés.</p>
+    </footer>
+
+    <script>
+        function updateGraph() {
+            var selectedCompany = document.getElementById("companySelect").value;
+            var graph1Title = document.getElementById("graph1Title");
+
+            if (selectedCompany === "danone") {
+                graph1Title.textContent = "Graphique pour Danone";
+            } else if (selectedCompany === "loreal") {
+                graph1Title.textContent = "Graphique pour L'Oréal";
+            } else if (selectedCompany === "airfrance") {
+                graph1Title.textContent = "Graphique pour Air France";
+            }
+        }
+
+        // Chargement des articles dynamiquement depuis le backend
+        fetch('http://localhost:5000/articles') // Modifie l'URL si nécessaire
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('articles-container');
+                container.innerHTML = '';
+
+                data.forEach(article => {
+                    const box = document.createElement('div');
+                    box.classList.add('article-box');
+
+                    const title = document.createElement('div');
+                    title.classList.add('article-title');
+                    title.textContent = article.titre || "Titre non disponible";
+
+                    const link = document.createElement('a');
+                    link.href = article.url || "#";
+                    link.textContent = "Lire l'article";
+                    link.target = "_blank";
+
+                    box.appendChild(title);
+                    box.appendChild(link);
+                    container.appendChild(box);
+                });
+            })
+            .catch(error => {
+                console.error("Erreur de chargement des articles :", error);
+            });
+    </script>
+</body>
+</html>
