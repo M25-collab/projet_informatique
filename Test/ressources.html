@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ressources - PredictStock</title>
+
+    <!-- Font Awesome pour les icônes PDF -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-bottom: 80px;
+        }
+
+        header {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        nav ul li a:hover {
+            color: #00FF00;
+        }
+
+        .ressources {
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-radius: 8px;
+        }
+
+        .ressources h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .ressources h3 {
+            margin-top: 30px;
+            color: #333;
+        }
+
+        .ressources ul {
+            list-style: none;
+            padding-left: 0;
+            font-size: 18px;
+        }
+
+        .ressources ul li {
+            margin-bottom: 10px;
+        }
+
+        .ressources i {
+            color: red;
+            margin-right: 10px;
+        }
+
+        .ressources a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .ressources a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+
+        footer ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        footer ul li {
+            margin-right: 20px;
+        }
+
+        footer ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        footer ul li a:hover {
+            color: #00FF00;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>PredictStock</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="/utilisateurs">Utilisateurs</a></li>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/actualites">Actualités</a></li>
+            <li><a href="/ressources">Ressources</a></li>
+        </ul>
+    </nav>
+
+    <section class="ressources">
+        <h2>Ressources Disponibles</h2>
+        <p>Voici les rapports financiers disponibles pour chaque entreprise :</p>
+
+        {% for entreprise, fichiers_liste in fichiers.items() %}
+            <h3>{{ entreprise.capitalize() }}</h3>
+            <ul>
+                {% for fichier in fichiers_liste %}
+                    <li>
+                        <i class="fas fa-file-pdf"></i>
+                        <a href="{{ url_for('static', filename='pdfs/' + fichier) }}" target="_blank">
+                            {{ fichier.replace('.pdf', '').replace(entreprise + '_', '') }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </section>
+
+    <footer>
+        <ul>
+            <li><a href="#">Mentions légales</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Réseaux sociaux</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Support</a></li>
+        </ul>
+        <p>&copy; 2025 PredictStock. Tous droits réservés.</p>
+    </footer>
+
+</body>
+</html>

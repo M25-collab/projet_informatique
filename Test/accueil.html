@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PredictStock</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        header {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        nav ul li a:hover {
+            color: #00FF00;
+        }
+
+        .main-content {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px;
+        }
+
+        .actualites, #ressources {
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-radius: 8px;
+        }
+
+        .actualites h2, #ressources h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+
+        footer ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        footer ul li {
+            margin-right: 20px;
+        }
+
+        footer ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        footer ul li a:hover {
+            color: #00ff0d;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>PredictStock</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="/utilisateurs">Utilisateurs</a></li>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/actualites">Actualités</a></li>
+            <li><a href="/ressources">Ressources</a></li>
+        </ul>
+    </nav>
+
+    <section class="main-content">
+        <div>
+            <label for="companySelect">Sélectionner une entreprise :</label>
+            <select id="companySelect" onchange="updateGraph()">
+                <option value="danone">Danone</option>
+                <option value="loreal">L'Oréal</option>
+                <option value="airfrance">Air France</option>
+            </select>
+            <canvas id="graph1" width="400" height="300"></canvas>
+        </div>
+
+        <div>
+            <canvas id="graph2" width="400" height="300"></canvas>
+        </div>
+    </section>
+
+    <section class="actualites" id="actualités">
+        <h2>Actualités Boursières</h2>
+        <p>Dernières nouvelles boursières, titres, articles avec liens vers les détails.</p>
+        <ul>
+            <li><a href="#">Titre 1 - Détails...</a></li>
+            <li><a href="#">Titre 2 - Détails...</a></li>
+            <li><a href="#">Titre 3 - Détails...</a></li>
+        </ul>
+    </section>
+
+
+    
+    <footer>
+        <ul>
+            <li><a href="#">Mentions légales</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Réseaux sociaux</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Support</a></li>
+        </ul>
+        <p>&copy; 2025 PredictStock. Tous droits réservés.</p>
+    </footer>
+
+    <script>
+        const stockData = {
+            danone: [],
+            loreal: [],
+            airfrance: []
+        };
+
+        const labels = [];
+        const MAX_POINTS = 120; // 20 minutes à 10 sec d'intervalle
+
+        const graph1 = new Chart(document.getElementById("graph1"), {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Danone",
+                    data: [],
+                    borderColor: "blue",
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Heure' } },
+                    y: { title: { display: true, text: 'Prix de l’action (€)' } }
+                }
+            }
+        });
+
+        const graph2 = new Chart(document.getElementById("graph2"), {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [
+                    { label: "Danone", data: [], borderColor: "blue", fill: false },
+                    { label: "L'Oréal", data: [], borderColor: "green", fill: false },
+                    { label: "Air France", data: [], borderColor: "red", fill: false }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Heure' } },
+                    y: { title: { display: true, text: 'Prix de l’action (€)' } }
+                }
+            }
+        });
+
+        function updateGraph() {
+            const selectedCompany = document.getElementById("companySelect").value;
+            const dataset = graph1.data.datasets[0];
+
+            dataset.label = selectedCompany.charAt(0).toUpperCase() + selectedCompany.slice(1);
+            dataset.data = stockData[selectedCompany];
+            graph1.update();
+        }
+
+        function fetchStockDataAndUpdateCharts() {
+            fetch('/api/stock-data')
+                .then(response => response.json())
+                .then(data => {
+                    const now = new Date().toLocaleTimeString();
+
+                    labels.push(now);
+                    if (labels.length > MAX_POINTS) labels.shift();
+
+                    for (const company of ["danone", "loreal", "airfrance"]) {
+                        const value = data[company][0]; // récupère la valeur actuelle
+                        stockData[company].push(value);
+                        if (stockData[company].length > MAX_POINTS) stockData[company].shift();
+                    }
+
+                    updateGraph();
+
+                    graph2.data.datasets[0].data = stockData.danone;
+                    graph2.data.datasets[1].data = stockData.loreal;
+                    graph2.data.datasets[2].data = stockData.airfrance;
+                    graph2.update();
+                })
+                .catch(error => console.error('Erreur de récupération des données:', error));
+        }
+
+        fetchStockDataAndUpdateCharts();
+        setInterval(fetchStockDataAndUpdateCharts, 10000);
+    </script>
+</body>
+</html>
