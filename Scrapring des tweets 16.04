@@ -1,0 +1,98 @@
+import snscrape.modules.twitter as sntwitter
+import datetime
+import pytz
+import schedule
+import time
+
+# Comptes Twitter officiels (ou représentatifs)
+comptes = {
+    "loreal": "LOrealGroupe",
+    "airfrance": "airfrance",
+    "danone": "Danone"
+}
+
+# Mots-clés avec poids
+sentiment_dict = {
+    "négatif": [
+        "Guerre", "Conflit", "Récession", "Inflation", "Crise économique", "Panne", "Grève", "Licenciements",
+        "Réduction des coûts", "Réduction des effectifs", "Fermeture d'usine", "Détérioration", "Incertitude",
+        "Perte", "Faillite", "Scandale", "Retard", "Suspension", "Dépôt de bilan", "Chômage",
+        "Problèmes de production", "Plan de restructuration", "Mauvais résultats", "Abandon de projet", "Pollution",
+        "Manque de financement", "Concurrence accrue", "Instabilité", "Déclin", "Crise de confiance", "Ralentissement",
+        "Embargo", "Désastre", "Controverse", "Disruption", "Contraction", "Scandale fiscal", "Non-conformité",
+        "Mauvaise performance", "Rétrogradation", "Mauvaise gestion", "Non-rentabilité", "Retards significatifs",
+        "Dissolution de partenariat", "Impact environnemental négatif", "Démission du PDG",
+        "Départ d'un cadre clé", "Appels à la liquidation", "Perte de contrats majeurs", "Dérives éthiques"
+    ],
+    "positif": [
+        "Bons résultats", "Croissance", "Succès", "Innovation", "Révolutionnaire", "Expansion", "Rentabilité",
+        "Part de marché", "Leadership", "Nouveau produit", "Collaboration fructueuse", "Forte demande",
+        "Augmentation des bénéfices", "Nouveaux contrats", "Augmentation des ventes", "Augmentation de la production",
+        "Bonnes perspectives", "Récompense", "Réalisation", "Partenariat stratégique", "Recrutement renforcé",
+        "Confiance", "Durabilité", "Prise de leadership", "Investissement fructueux", "Valeur ajoutée",
+        "Expansion internationale", "Développement", "Réussite", "Excellence", "Soutien gouvernemental",
+        "Amélioration", "Performance exceptionnelle", "Progrès", "Rentabilité durable", "Remboursement de dette",
+        "Relations publiques positives", "Innovation technologique", "Récupération rapide", "Progrès exceptionnels",
+        "Croissance exponentielle", "Innovation de rupture", "Leadership sur le marché", "Partenariat gagnant-gagnant",
+        "Prise de part de marché", "Recrutement d'experts", "Augmentation de la rentabilité", "Récupération post-crise"
+    ],
+    "neutre": [
+        "Projet", "Rapport", "Investissement", "Expansion", "Nouvelle technologie", "Révision", "Progrès",
+        "Lancement", "Réflexion", "Collaboration", "Nouveau partenariat", "Recrutement", "Diversification",
+        "Initiative", "Fusion", "Acquisition", "Présentation", "Discussion", "Objectif", "Recherche",
+        "Protocole", "Test", "Investisseur", "Consensus", "Marché", "Indicateur", "Analyse", "Évaluation"
+    ]
+}
+
+# Fonction d’analyse de sentiment d’un tweet
+def analyser_sentiment(texte):
+    score = 0
+    texte = texte.lower()
+    for mot in sentiment_dict["négatif"]:
+        if mot.lower() in texte:
+            score -= 1
+    for mot in sentiment_dict["positif"]:
+        if mot.lower() in texte:
+            score += 1
+    # Les mots neutres n'influencent pas le score, mais on peut les logger/analyser
+    return score
+
+# Scraper et analyser les tweets d'un compte
+def scraper_et_analyser(compte):
+    tweets = []
+    score_total = 0
+    nb_tweets_analyzes = 0
+
+    now = datetime.datetime.now(pytz.timezone("Europe/Paris"))
+    today = now.strftime("%Y-%m-%d")
+    search = f"from:{compte} since:{today}"
+
+    for tweet in sntwitter.TwitterSearchScraper(search).get_items():
+        tweets.append(tweet.content)
+        score_total += analyser_sentiment(tweet.content)
+        nb_tweets_analyzes += 1
+
+    if nb_tweets_analyzes == 0:
+        return 0, []
+
+    moyenne = score_total / nb_tweets_analyzes
+    return moyenne, tweets
+
+# Fonction principale à lancer tous les jours à 6h
+def job_du_jour():
+    print("\n--- Scraping quotidien à 6h ---")
+    for entreprise, compte in comptes.items():
+        note, tweets = scraper_et_analyser(compte)
+        print(f"\nEntreprise : {entreprise.capitalize()} ({compte})")
+        print(f"Nombre de tweets analysés : {len(tweets)}")
+        print(f"Note de sentiment moyenne : {note:.2f}")
+        for t in tweets:
+            print(f"  • {t[:100]}...")  # aperçu
+
+# Planifier à 6h (heure française)
+schedule.every().day.at(6:00").do(job_du_jour)
+
+print("Bot de scraping prêt. En attente de l'heure prévue (06:00 Europe/Paris)...")
+while True:
+    schedule.run_pending()
+    time.sleep(60)
