@@ -15,7 +15,6 @@
             position: relative;
         }
 
-        /* Bloc pseudo + image en haut à droite */
         #user-info {
             position: absolute;
             top: 10px;
@@ -119,7 +118,7 @@
     <header>
         <h1>PredictStock</h1>
         <div id="user-info">
-            <img id="user-avatar" src="images/image1.png" alt="Avatar">
+            <img id="user-avatar" src="static/images/image1.png" alt="Avatar">
             <span id="user-name">Toto</span>
         </div>
     </header>
@@ -133,7 +132,6 @@
         </ul>
     </nav>
 
-    <!-- Section Utilisateurs -->
     <section class="utilisateurs">
         <h2>Configurer votre profil</h2>
         <label for="pseudo">Pseudo :</label>
@@ -141,11 +139,11 @@
 
         <h3>Choisissez votre avatar :</h3>
         <div id="avatar-options">
-            <label><input type="radio" name="avatar" value="image1.png" checked><img src="images/image1.png"></label>
-            <label><input type="radio" name="avatar" value="image2.png"><img src="images/image2.png"></label>
-            <label><input type="radio" name="avatar" value="image3.png"><img src="images/image3.png"></label>
-            <label><input type="radio" name="avatar" value="image4.png"><img src="images/image4.png"></label>
-            <label><input type="radio" name="avatar" value="image5.png"><img src="images/image5.png"></label>
+            <label><input type="radio" name="avatar" value="image1.png" checked><img src="static/images/image1.png"></label>
+            <label><input type="radio" name="avatar" value="image2.png"><img src="static/images/image2.png"></label>
+            <label><input type="radio" name="avatar" value="image3.png"><img src="static/images/image3.png"></label>
+            <label><input type="radio" name="avatar" value="image4.png"><img src="static/images/image4.png"></label>
+            <label><input type="radio" name="avatar" value="image5.png"><img src="static/images/image5.png"></label>
         </div>
         <br>
         <button onclick="sauverUtilisateur()">Sauvegarder</button>
@@ -184,7 +182,7 @@
             const image = localStorage.getItem("avatar") || "image1.png";
 
             document.getElementById("user-name").textContent = nom;
-            document.getElementById("user-avatar").src = "images/" + image;
+            document.getElementById("user-avatar").src = "static/images/" + image;
         }
 
         window.onload = afficherUtilisateur;
