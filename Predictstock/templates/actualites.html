@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<!--  pour inclure header.html -->
+{% include 'header.html' %}
+
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualités - PredictStock</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        
+
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #080808;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        nav ul li a:hover {
+            color: #00FF00;
+        }
+
+        .news-container {
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        .news-item {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 90px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .news-item h2 {
+            color: #333;
+        }
+
+        .news-item p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .news-item .date {
+            font-size: 0.9rem;
+            color: #999;
+            margin-top: 10px;
+        }
+
+        .news-item a {
+            text-decoration: none;
+            color: #00FF00;
+            font-weight: bold;
+        }
+
+        .news-item a:hover {
+            color: #007700;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+
+
+            /* ici pour mettre le logo*/
+
+            #logo {
+    height: 60px;
+    width: auto;
+}
+
+#user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#user-avatar {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+}
+
+/* ici pour le bas de la page */
+
+footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+        footer ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+        }
+        footer ul li {
+            margin: 0 20px;
+        }
+        footer ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        footer ul li a:hover {
+            color: #00ff0d;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- pour prendre le header -->
+    <div id="header-container"></div>
+
+<header>
+    <h1>Actualités Boursières</h1>
+</header>
+
+<nav>
+    <ul>
+        <li><a href="/utilisateurs">Utilisateurs</a></li>
+        <li><a href="/">Accueil</a></li>
+        <li><a href="/actualites">Actualités</a></li>
+        <li><a href="/ressources">Ressources</a></li>
+    </ul>
+</nav>
+
+<div class="news-container">
+    
+
+<!-- Liens vers les sites du bas -->
+<footer>
+    <ul>
+      <li><a href="/mentions">Mentions légales</a></li>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/reseaux">Réseaux sociaux</a></li>
+      <li><a href="/faq">FAQ</a></li>
+      <li><a href="/support">Support</a></li>
+    </ul>
+    <p>&copy; 2025 PredictStock. Tous droits réservés.</p>
+  </footer>
+
+<script>
+
+
+
+
+
+    fetch('/actu')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.querySelector('.news-container');
+
+            if (data.length === 0) {
+                container.innerHTML += '<p>Aucun article disponible.</p>';
+            } else {
+                data.forEach(article => {
+                    const articleHTML = `
+                        <div class="news-item">
+                            <h2><a href="${article.url}" target="_blank">${article.titre}</a></h2>
+                            <p>${article.description}</p>
+                            <p class="date">Score d'impact : ${article.score}</p>
+                        </div>
+                    `;
+                    container.innerHTML += articleHTML;
+                });
+            }
+        })
+        .catch(err => {
+            document.querySelector('.news-container').innerHTML += '<p>Erreur de chargement des articles.</p>';
+            console.error(err);
+        });
+</script>
+
+
+   
+</div>
+
+
+
+</body>
+</html>

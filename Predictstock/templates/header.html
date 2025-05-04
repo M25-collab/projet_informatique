@@ -1,0 +1,44 @@
+<!-- header.html -->
+ <!-- ici on veut stocker les images...  -->
+
+<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px;">
+    <!-- LOGO À GAUCHE -->
+    <div id="site-logo">
+        <img src="static/images/LogoPrediStock.png" alt="Logo" id="logo">
+    </div>
+
+    <!-- INFO UTILISATEUR À DROITE -->
+    <div id="user-info">
+        <img id="user-avatar" src="static/images/image1.png" alt="Avatar">
+        <span id="user-name">Toto</span>
+    </div>
+</header>
+
+<script>
+    function afficherUtilisateur() {
+        const nom = localStorage.getItem("pseudo") || "Toto";
+        const image = localStorage.getItem("avatar") || "image1.png";
+        document.getElementById("user-name").textContent = nom;
+        document.getElementById("user-avatar").src = "static/images/" + image;
+    }
+    window.onload = afficherUtilisateur;
+</script>
+<!-- Ici c'est pour placé l'image -->
+<style>
+
+
+    #user-info {
+        position: absolute;
+        top: 25px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    #user-info img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+</style>

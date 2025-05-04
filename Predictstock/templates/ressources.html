@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<!--  pour inclure header.html -->
+{% include 'header.html' %}
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ressources - PredictStock</title>
+
+    <!-- Font Awesome pour les icônes PDF et autres icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        /* Styles généraux */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-bottom: 200px;
+            background-color: #f0f0f0; /* Fond clair pour l'ensemble de la page */
+        }
+
+        header {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        nav ul li a:hover {
+            color: #00FF00;
+        }
+
+        /* Section Ressources */
+        .ressources {
+            margin: 20px;
+            padding: 20px;
+            background-color: #ffffff; /* Fond blanc pour la section */
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Ombre douce autour de la section */
+        }
+
+        .ressources h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .ressources h3 {
+            margin-top: 30px;
+            color: #333;
+        }
+
+        .ressources ul {
+            list-style: none;
+            padding-left: 0;
+            font-size: 18px;
+        }
+
+        .ressources ul li {
+            margin-bottom: 10px;
+        }
+
+        .ressources i {
+            color: red;
+            margin-right: 10px;
+        }
+
+        .ressources a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .ressources a:hover {
+            text-decoration: underline;
+        }
+
+        /* CALCULATRICE STYLÉE */
+        .calculatrice {
+            max-width: 500px;
+            background-color: #fafafa; /* Fond légèrement gris */
+            padding: 25px;
+            margin: 50px auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Ombre douce autour de la calculatrice */
+            border: 2px solid #ccc; /* Bordure claire autour de la calculatrice */
+        }
+
+        .calculatrice h3, .calculatrice h4 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #222;
+        }
+
+        .calculatrice input[type="text"],
+        .calculatrice input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 18px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            transition: border 0.3s ease;
+        }
+
+        .calculatrice input[type="text"]:focus,
+        .calculatrice input[type="number"]:focus {
+            border: 2px solid #007bff;
+            outline: none;
+        }
+
+        .calculatrice button {
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745; /* Vert pour les boutons */
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+
+        .calculatrice button:hover {
+            background-color: #218838; /* Changement de couleur au survol */
+            transform: scale(1.05); /* Effet de zoom au survol */
+        }
+
+        .calculatrice button:active {
+            background-color: #1e7e34; /* Couleur au clic */
+        }
+
+        .calculatrice p {
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        #historique {
+            max-height: 150px;
+            overflow-y: auto;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+
+        footer ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        footer ul li {
+            margin-right: 20px;
+        }
+
+        footer ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        footer ul li a:hover {
+            color: #00FF00;
+        }
+
+
+    /* ici pour mettre le logo*/
+
+        #logo {
+    height: 60px;
+    width: auto;
+}
+
+#user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#user-avatar {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+}
+
+        
+    </style>
+</head>
+<body>
+
+
+    <!-- pour prendre le header -->
+    <div id="header-container"></div>
+
+    <!-- Entête du site -->
+    <header>
+        <h1>PredictStock</h1>
+    </header>
+
+    <!-- Menu de navigation -->
+    <nav>
+        <ul>
+            <li><a href="/utilisateurs">Utilisateurs</a></li>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/actualites">Actualités</a></li>
+            <li><a href="/ressources">Ressources</a></li>
+        </ul>
+    </nav>
+
+    <!-- Section des ressources -->
+    <section class="ressources">
+        <h2>Ressources Disponibles</h2>
+        
+
+        <!-- Guide pour Débutants -->
+        <h3>Guide pour Débutants 📘</h3>
+        <ul>
+            <li>
+                <i class="fas fa-file-pdf"></i>
+                <a href="{{ url_for('static', filename='pdfs/guide_debutant_bourse.pdf') }}" target="_blank">
+                    Introduction à la Bourse - Guide pour Débutants
+                </a>
+            </li>
+        </ul>
+
+        <!-- Liens utiles pour comprendre la bourse -->
+        <h3>🌐 Liens utiles pour Comprendre la Bourse</h3>
+        <ul>
+            <!-- Site officiel d'information pour les épargnants en France -->
+            <li>
+                <i class="fas fa-link"></i>
+                <a href="https://www.amf-france.org/fr/espace-epargnants" target="_blank">
+                    AMF – Espace Épargnants (officiel)
+                </a>
+            </li>
+
+            <!-- Banque en ligne avec ressources pédagogiques -->
+            <li>
+                <i class="fas fa-link"></i>
+                <a href="https://www.boursorama.com/patrimoine/guides/" target="_blank">
+                    Boursorama – Guides d'investissement
+                </a>
+            </li>
+
+            <!-- Base de connaissance très complète en anglais -->
+            <li>
+                <i class="fas fa-link"></i>
+                <a href="https://www.investopedia.com/" target="_blank">
+                    Investopedia – Lexique & Tutoriels (EN)
+                </a>
+            </li>
+
+            <!-- Portail financier avec analyses et outils pratiques -->
+            <li>
+                <i class="fas fa-link"></i>
+                <a href="https://www.zonebourse.com/" target="_blank">
+                    ZoneBourse – Outils & Analyses de marché
+                </a>
+            </li>
+
+            <!-- Apprentissage de la bourse via la simulation -->
+            <li>
+                <i class="fas fa-link"></i>
+                <a href="https://boursicot.com/" target="_blank">
+                    Boursicot – Apprendre avec des simulations
+                </a>
+            </li>
+        </ul>
+
+        <!-- Affichage des fichiers PDF par entreprise -->
+        {% for entreprise, fichiers_liste in fichiers.items() %}
+            <h3>{{ entreprise.capitalize() }}</h3>
+            <ul>
+                {% for fichier in fichiers_liste %}
+                    <li>
+                        <i class="fas fa-file-pdf"></i>
+                        <a href="{{ url_for('static', filename='pdfs/' + fichier) }}" target="_blank">
+                            {{ fichier.replace('.pdf', '').replace(entreprise + '_', '') }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </section>
+
+    <!-- SECTION CALCULATRICE -->
+    <section class="calculatrice">
+        <h3>🧮 Outils de calculs financiers</h3>
+        <input type="text" id="ecran" placeholder="0" readonly>
+        <div class="boutons">
+            <button onclick="ajouter('7')">7</button>
+            <button onclick="ajouter('8')">8</button>
+            <button onclick="ajouter('9')">9</button>
+            <button onclick="ajouter('/')">÷</button>
+            <button onclick="ajouter('4')">4</button>
+            <button onclick="ajouter('5')">5</button>
+            <button onclick="ajouter('6')">6</button>
+            <button onclick="ajouter('*')">×</button>
+            <button onclick="ajouter('1')">1</button>
+            <button onclick="ajouter('2')">2</button>
+            <button onclick="ajouter('3')">3</button>
+            <button onclick="ajouter('-')">−</button>
+            <button onclick="ajouter('0')">0</button>
+            <button onclick="ajouter('.')">.</button>
+            <button onclick="calculer()">=</button>
+            <button onclick="ajouter('+')">+</button>
+            <button onclick="effacer()" style="grid-column: span 4; background-color: #dc3545;">C</button>
+        </div>
+
+        <h4>💱 Conversion EUR/USD</h4>
+        <input type="number" id="montant" placeholder="Montant">
+        <button onclick="convertirUSD()">En USD</button>
+        <button onclick="convertirEUR()">En EUR</button>
+        <p id="conversionResult"></p>
+
+        <h4>📈 Rendement d'une action</h4>
+        <input type="number" id="prix_achat" placeholder="Prix d'achat">
+        <input type="number" id="prix_vente" placeholder="Prix de vente">
+        <button onclick="calculerRendement()">Calculer rendement %</button>
+        <p id="rendementResult"></p>
+
+        <h4>🕒 Historique</h4>
+        <ul id="historique"></ul>
+    </section>
+
+    <footer>
+        <ul>
+            <li><a href="#">Mentions légales</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Réseaux sociaux</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Support</a></li>
+        </ul>
+        <p>&copy; 2025 PredictStock. Tous droits réservés.</p>
+    </footer>
+
+<!-- Liens vers les sites du bas -->
+<footer>
+    <ul>
+      <li><a href="/mentions">Mentions légales</a></li>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/reseaux">Réseaux sociaux</a></li>
+      <li><a href="/faq">FAQ</a></li>
+      <li><a href="/support">Support</a></li>
+    </ul>
+    <p>&copy; 2025 PredictStock. Tous droits réservés.</p>
+  </footer>
+
+
+    <!-- JS pour la calculatrice -->
+    <script>
+
+
+
+        const ecran = document.getElementById('ecran');
+        const historique = document.getElementById('historique');
+
+        function ajouter(valeur) {
+            ecran.value += valeur;
+        }
+
+        function calculer() {
+            try {
+                const resultat = eval(ecran.value);
+                historique.innerHTML += `<li>${ecran.value} = ${resultat}</li>`;
+                ecran.value = resultat;
+            } catch {
+                ecran.value = "Erreur";
+            }
+        }
+
+        function effacer() {
+            ecran.value = "";
+        }
+
+        function convertirUSD() {
+            const montant = parseFloat(document.getElementById("montant").value);
+            const taux = 1.08;
+            if (!isNaN(montant)) {
+                const result = (montant * taux).toFixed(2);
+                document.getElementById("conversionResult").textContent = `${montant} € = ${result} $`;
+                historique.innerHTML += `<li>Conversion : ${montant} € ➝ ${result} $</li>`;
+            }
+        }
+
+        function convertirEUR() {
+            const montant = parseFloat(document.getElementById("montant").value);
+            const taux = 0.93;
+            if (!isNaN(montant)) {
+                const result = (montant * taux).toFixed(2);
+                document.getElementById("conversionResult").textContent = `${montant} $ = ${result} €`;
+                historique.innerHTML += `<li>Conversion : ${montant} $ ➝ ${result} €</li>`;
+            }
+        }
+
+        function calculerRendement() {
+            const achat = parseFloat(document.getElementById("prix_achat").value);
+            const vente = parseFloat(document.getElementById("prix_vente").value);
+            if (!isNaN(achat) && !isNaN(vente) && achat !== 0) {
+                const rendement = (((vente - achat) / achat) * 100).toFixed(2);
+                document.getElementById("rendementResult").textContent = `Rendement : ${rendement}%`;
+                historique.innerHTML += `<li>Rendement : ${rendement}%</li>`;
+            }
+        }
+
+
+
+        
+    </script>
+</body>
+</html>
+
+

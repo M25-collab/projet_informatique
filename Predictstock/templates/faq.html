@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <style>
+        /* --- Styles généraux pour le haut de page --- */
+        header {
+            text-align: center;
+            margin-top: 20px;
+        }
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            justify-content: center;
+            padding: 0;
+        }
+        nav ul li {
+            margin: 0 20px;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        nav ul li a:hover {
+            color: #00FF00;
+        }
+        .main-content {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .actualites, #ressources {
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-radius: 8px;
+        }
+        .actualites h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+        footer ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+        }
+        footer ul li {
+            margin: 0 20px;
+        }
+        footer ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        footer ul li a:hover {
+            color: #00ff0d;
+        }
+    </style>
+</head>
+<!-- Ici pour mettre en haut comme d'hab-->
+    <nav>
+        <ul>
+            <li><a href="/utilisateurs">Utilisateurs</a></li>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/actualites">Actualités</a></li>
+            <li><a href="/ressources">Ressources</a></li>
+        </ul>
+    </nav>
+    <meta charset="UTF-8">
+    <title>Mentions légales - PredictStock</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-top: 80px;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #f8f8f8;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+        }
+
+        #logo {
+            height: 40px;
+        }
+
+        #user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #user-avatar {
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="static/images/LogoPrediStock.png" alt="Logo" id="logo">
+    <div id="user-info">
+        <img id="user-avatar" src="static/images/image1.png" alt="Avatar">
+        <span id="user-name">Toto</span>
+    </div>
+</header>
+
+<main>
+    <h1>FAQ</h1>
+    <p>Questions fréquentes à propos de PredictStock.</p>    
+</main>
+
+<script>
+    function afficherUtilisateur() {
+        const nom = localStorage.getItem("pseudo") || "Toto";
+        const image = localStorage.getItem("avatar") || "image1.png";
+        document.getElementById("user-name").textContent = nom;
+        document.getElementById("user-avatar").src = "static/images/" + image;
+    }
+
+    window.onload = afficherUtilisateur;
+</script>
+
+</body>
+</html>
