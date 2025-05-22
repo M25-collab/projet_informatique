@@ -16,16 +16,24 @@ import threading
 
 app = Flask(__name__)
 
+# Initialiser les tickers yfinance au démarrage
+TICKERS = {
+    "danone": yf.Ticker("BN.PA"),
+    "loreal": yf.Ticker("OR.PA"),
+    "airfrance": yf.Ticker("AF.PA")
+}
 
 def safe_get_history(ticker_str, period="6mo", interval="1wk"):
     retries = 5
     wait = 30
     for attempt in range(retries):
         try:
-            ticker = yf.Ticker(ticker_str)
-            hist = ticker.history(period=period, interval=interval)
-            time.sleep(1)
-            return hist
+            # Cherche le ticker dans le cache initial
+            for name, ticker in TICKERS.items():
+                if ticker_str == ticker.ticker:
+                    hist = ticker.history(period=period, interval=interval)
+                    time.sleep(1)
+                    return hist
         except Exception as e:
             if "Too Many Requests" in str(e):
                 print(f"Rate limit hit for {ticker_str}. Retrying in {wait}s...")
@@ -35,6 +43,7 @@ def safe_get_history(ticker_str, period="6mo", interval="1wk"):
                 print(f"Erreur sur {ticker_str} : {e}")
                 break
     return None
+
 
 # --------------------------- CACHE + STOCK DATA ---------------------------
 
@@ -63,10 +72,11 @@ def save_cache_to_file(cache_data):
 
 def get_stock_price(ticker_symbol):
     try:
-        ticker = yf.Ticker(ticker_symbol)
-        info = ticker.info
-        price = info.get("currentPrice")
-        return float(price) if price else None
+        for name, ticker in TICKERS.items():
+            if ticker_symbol == ticker.ticker:
+                info = ticker.info
+                price = info.get("currentPrice")
+                return float(price) if price else None
     except Exception as e:
         print(f"Erreur {ticker_symbol}: {e}")
         return None
@@ -467,5 +477,6 @@ if __name__ == '__main__':
 
     # Lancer le serveur sans reloader
     app.run(debug=False, use_reloader=False)
+
 
 
