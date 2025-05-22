@@ -3,7 +3,6 @@
 <!--  pour inclure header.html -->
 {% include 'header.html' %}
 
-<button onclick="runExports()">Lancer Export & IA</button>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -375,12 +374,7 @@ fetchPredictions();
 
         
 
-  function runExports() {
-    fetch('/admin/run_exports')
-      .then(response => response.json())
-      .then(data => alert(data.status))
-      .catch(error => alert('Erreur : ' + error));
-  }
+
 
 
 
