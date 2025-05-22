@@ -11,24 +11,35 @@ import pytz
 import csv
 from flask import send_file
 import subprocess
-
-def safe_get_history(ticker_str, period="6mo", interval="1wk"):
-    try:
-        ticker = yf.Ticker(ticker_str)
-        hist = ticker.history(period=period, interval=interval)
-        time.sleep(1)  # pour ralentir les requêtes
-        return hist
-    except yf.exceptions.YFRateLimitError:
-        print(f"🚨 Rate limit atteint pour {ticker_str}, pause de 60s...")
-        time.sleep(60)
-        return safe_get_history(ticker_str, period, interval)
-    except Exception as e:
-        print(f"❌ Erreur lors de la récupération de {ticker_str} : {e}")
-        return None
-
-
+import threading
+from flask import redirect, url_for
 
 app = Flask(__name__)
+
+
+"""def safe_get_history(ticker_str, period="6mo", interval="1wk"):
+    retries = 5
+    wait = 30
+    for attempt in range(retries):
+        try:
+            ticker = yf.Ticker(ticker_str)
+            hist = ticker.history(period=period, interval=interval)
+            time.sleep(1)  # petite pause pour être poli
+            return hist
+        except Exception as e:
+            if "Too Many Requests" in str(e):
+                print(f"❌ Rate limit hit for {ticker_str}. Waiting {wait} seconds before retry {attempt+1}...")
+                time.sleep(wait)
+                wait *= 2  # backoff exponentiel
+            else:
+                print(f"❌ Erreur récupération {ticker_str} : {e}")
+                break
+    return None"""
+
+
+
+
+
 
 # Partie app.py : Stock Data
 
@@ -36,13 +47,13 @@ cache = {
     "data": None,
     "timestamp": 0
 }
-CACHE_DURATION = 30  # secondes
+CACHE_DURATION = 180  # secondes
 LOG_FILE = "stock_data_log.jsonl"
 
 def get_stock_price(ticker_symbol):
     try:
         ticker = yf.Ticker(ticker_symbol)
-        time.sleep(5)
+        
         info = ticker.info
         price = info.get("currentPrice")
         return float(price) if price else None
@@ -98,19 +109,84 @@ def ressources():
         lower = fichier.lower()
         if lower.startswith("danone"):
             fichiers_par_entreprise["danone"].append(fichier)
+            time.sleep(1)
         elif lower.startswith("loreal") or lower.startswith("loréal"):
             fichiers_par_entreprise["loreal"].append(fichier)
+            time.sleep(1)
         elif lower.startswith("airfrance"):
             fichiers_par_entreprise["airfrance"].append(fichier)
+            time.sleep(1)
 
     for entreprise in fichiers_par_entreprise:
         fichiers_par_entreprise[entreprise].sort()
+        time.sleep(1)
 
     return render_template("ressources.html", fichiers=fichiers_par_entreprise)
 
 @app.route('/actualites')  
 def actualites():
     return render_template('actualites.html')
+
+CACHE_FILE = "cache_stock_data.json"  # Fichier pour cache persistant sur disque
+
+# Charger cache depuis disque au démarrage (sinon vide)
+def load_cache_from_file():
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, 'r') as f:
+                cache_data = json.load(f)
+                # Vérifier que le timestamp est présent
+                if "timestamp" in cache_data and "data" in cache_data:
+                    return cache_data
+        except Exception as e:
+            print(f"Erreur chargement cache disque: {e}")
+    return {"data": None, "timestamp": 0}
+
+# Sauvegarder cache dans fichier
+def save_cache_to_file(cache_data):
+    try:
+        with open(CACHE_FILE, 'w') as f:
+            json.dump(cache_data, f)
+    except Exception as e:
+        print(f"Erreur sauvegarde cache disque: {e}")
+
+# Initialisation cache mémoire en important les données du fichier au démarrage
+cache = load_cache_from_file()
+
+CACHE_DURATION = 30  # secondes (tu peux augmenter)
+
+"""@app.route('/api/stock-data')
+def api_stock_data():
+    now = time.time()
+
+    # 1) Vérifier si cache mémoire est valide
+    if cache["data"] and now - cache["timestamp"] < CACHE_DURATION:
+        print("✅ Données servies depuis le cache mémoire")
+        return jsonify(cache["data"])
+    
+    # 2) Sinon, essayer de charger cache depuis disque (persistant)
+    cache_file_data = load_cache_from_file()
+    if cache_file_data["data"] and now - cache_file_data["timestamp"] < CACHE_DURATION:
+        # Mettre à jour cache mémoire depuis cache disque
+        cache["data"] = cache_file_data["data"]
+        cache["timestamp"] = cache_file_data["timestamp"]
+        print("✅ Données servies depuis le cache disque")
+        return jsonify(cache["data"])
+
+    # 3) Sinon, recharger depuis yfinance
+    print("🔄 Mise à jour des données avec yfinance...")
+    data = fetch_all_prices()
+
+    # 4) Mettre à jour cache mémoire et disque
+    cache["data"] = data
+    cache["timestamp"] = now
+    save_cache_to_file(cache)
+
+    return jsonify(data)"""
+
+# --- FIN modification cache persistante ---
+
+# --- A COMMENTER ou supprimer si tu veux, car remplacé par le cache persisté
 
 @app.route('/api/stock-data')
 def api_stock_data():
@@ -125,6 +201,7 @@ def api_stock_data():
     cache["timestamp"] = now
     return jsonify(data)
 
+
 @app.route('/api/historical-stock-data')
 def api_historical_stock_data():
     try:
@@ -137,20 +214,30 @@ def api_historical_stock_data():
             "airfrance": "AF.PA"
         }
 
+        # --- Modification: centraliser l'appel yfinance ici ---
+        ticker_symbols_str = " ".join(tickers.values())  # "BN.PA OR.PA AF.PA"
+        tickers_obj = yf.Tickers(ticker_symbols_str)
+
         data = {}
         for name, symbol in tickers.items():
-            # hist = yf.Ticker(symbol).history(period=period, interval=interval)
-            hist = safe_get_history(symbol, period=period, interval=interval)
-            time.sleep(1)
-            data[name] = {
-                "dates": hist.index.strftime('%Y-%m-%d').tolist(),
-                "values": hist["Close"].fillna(0).tolist()
-            }
+            # Utilisation du ticker centralisé
+            # ATTENTION: yfinance ne garantit pas toujours la fiabilité sur plusieurs tickers
+            ticker = yf.Ticker(symbol)
+            hist = ticker.history(period=period, interval=interval)
+            time.sleep(1)  # diminuer par rapport à avant (45s)
+            if hist is None or hist.empty:
+                data[name] = {"dates": [], "values": []}
+            else:
+                data[name] = {
+                    "dates": hist.index.strftime('%Y-%m-%d').tolist(),
+                    "values": hist["Close"].fillna(0).tolist()
+                }
 
         return jsonify(data)
     except Exception as e:
         print("Erreur données historiques :", e)
         return jsonify({"error": str(e)}), 500
+    
 
 # Partie actu_geo.py : Actualités géopolitiques
 
@@ -281,7 +368,12 @@ def export_historique_csv(company, filename='historique.csv'):
     #hist = yf.Ticker({"danone":"BN.PA","loreal":"OR.PA","airfrance":"AF.PA"}[company]) \
     #       .history(period=period, interval=interval)
     symbol = {"danone":"BN.PA", "loreal":"OR.PA", "airfrance":"AF.PA"}[company]
-    hist = safe_get_history(symbol, period=period, interval=interval)
+    time.sleep(1)
+    ticker = yf.Ticker(symbol)
+    hist = ticker.history(period=period, interval=interval)
+    if hist is None or hist.empty:
+        print(f"❌ Impossible de récupérer l'historique pour {company}.")
+        return
     time.sleep(1)
     dates   = hist.index.strftime('%Y-%m-%d').tolist()
     closes  = hist["Close"].fillna(0).tolist()
@@ -311,7 +403,7 @@ def export_csv(company):
     
     # Générer le fichier CSV si nécessaire
     export_historique_csv(company, filename)
-    time.sleep(5)
+    time.sleep(1)
     
     # Renvoi du fichier CSV
     return send_file(filename, as_attachment=True)
@@ -321,7 +413,9 @@ def export_csv(company):
 def predict(company):
     filename = f'historique_{company}.csv'
     export_historique_csv(company, filename)
-    time.sleep(5)
+    lancer_ia(company)
+    return jsonify({"message": f"Prédiction lancée pour {company}."})
+
 
 def lancer_ia(company):
     """
@@ -358,19 +452,24 @@ def lancer_ia(company):
     except FileNotFoundError as e:
         print(f"❌ Erreur : {e}")
 
-
+# Il faut ATTENDRE vraiment quelques secondes voir une bonne minute pitié sinon trop de demande, pitié, si fonctionne pas enlever VPN
 @app.route('/api/prediction-data', methods=['GET'])
 def prediction_data():
-    result = {}
-    for company in ['danone', 'loreal', 'airfrance']:
-        filepath = f'prediction_{company}.txt'
+    companies = ['danone', 'loreal', 'airfrance']
+    prediction_results = {}
+    for company in companies:
+        prediction_file = f"prediction_{company}_corr.txt"
         try:
-            with open(filepath, 'r') as f:
-                lignes = f.read().splitlines()
-                result[company] = [float(val) for val in lignes if val.strip()]
+            with open(f'ia/{company}_txt_corr.txt', 'r') as file:
+                predictions = file.readlines()
+                prediction = float(predictions[-1].strip())
+                prediction_results[company] = [prediction]
         except FileNotFoundError:
-            result[company] = []
-    return jsonify(result)
+            print(f"Fichier non trouvé : {prediction_file}")
+            prediction_results[company] = [0]
+    return {"data": prediction_results, "timestamp": time.time()}
+
+
 
 
 #Routes vers les nouvelles pages
@@ -396,6 +495,21 @@ def support():
     return render_template('support.html')
 
 
+@app.route('/admin/run_exports')
+def run_exports():
+    def background_task():
+        for company in ['danone', 'loreal', 'airfrance']:
+            export_historique_csv(company)
+            lancer_ia(company)
+
+
+    thread = threading.Thread(target=background_task)
+    thread.start()
+
+    return jsonify({"status": "Exportation et IA lancés en arrière-plan"})
+
+
+
 # Démarrage de l'application
 if __name__ == '__main__':
     # 1) Charger les coefficients et récupérer les articles
@@ -404,12 +518,13 @@ if __name__ == '__main__':
     schedule_article_update()
 
     # 2) Générer les CSV historiques + lancer l’IA C pour chaque entreprise
-    for company in ['danone', 'loreal', 'airfrance']:
+    """for company in ['danone', 'loreal', 'airfrance']:
         # a) CSV prix + score
         export_historique_csv(company, f'historique_{company}.csv')
-        time.sleep(5)
+        
         # b) Appel à l’IA C => création de prediction_<company>.txt
-        lancer_ia(company)
+        lancer_ia(company)"""
+        
 
     # 3) Lancer le serveur Flask (une seule fois !)
     app.run(debug=True)
