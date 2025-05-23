@@ -1,0 +1,438 @@
+\documentclass[a4paper, 12pt, twoside]{article}
+\usepackage[utf8]{inputenc}		% LaTeX, comprend les accents !
+\usepackage[T1]{fontenc}		
+\usepackage[francais]{babel}
+\usepackage{lmodern}
+\usepackage{ae,aecompl}
+\usepackage[top=2.5cm, bottom=2cm, 
+			left=3cm, right=2.5cm,
+			headheight=15pt]{geometry}
+\usepackage{graphicx}
+\usepackage{eso-pic}	% Nécessaire pour mettre des images en arrière plan
+\usepackage{array} 
+\usepackage{hyperref}
+\usepackage[most]{tcolorbox}
+\usepackage{float}
+\usepackage{verbatim}
+
+
+\input{pagedegarde}
+
+
+\title{PredictStock : Prédiction du cours de 3 actions}
+\entreprise{Predictstock}
+\datedebut{26 février 2025}
+\datefin{22 mai 2025 \begin{tcolorbox}[colback=gray!10, colframe=black, boxrule=0.5pt, width=0.9\textwidth, title=Dépôt GitHub]
+Lien vers le code :
+\href{https://github.com/M25-collab/projet_informatique}{https://github.com/M25-collab/projet_informatique}
+\end{tcolorbox}}
+
+
+
+\membrea{Bouyahia Ilyess 43002451}
+\membreb{Cissokho Mohamed 43009534}
+\membrec{Jabot Lucien 44002365}
+
+
+\begin{document}
+
+\pagedegarde
+\section*{Remerciements}
+Merci, merci à tous.
+\newpage
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+Le projet PredictStock tire son nom de la contraction entre "Predi" pour prédire et "Stock" pour action, reflétant ainsi notre objectif principal : prédire le cours de 3 actions.
+Nous avons choisi ce projet car le domaine de la finance algorithmique et la prédiction boursière nous passionnent, mêlant à la fois programmation, analyse de données et intelligence artificielle. Le défi technique de combiner différentes sources de données pour faire des prédictions pertinentes nous a motivés.\\
+
+Pour avancer, nous avons structuré notre travail en réunions hebdomadaires pour faire le point sur l’avancement. Nous avons également utilisé un diagramme de Gantt pour suivre la progression des tâches de chacun, ce qui a permis une coordination efficace, notamment lorsque le travail de l’un dépendait du code développé par un autre.\\
+
+L’intelligence artificielle a été au cœur de notre démarche, nous aidant à générer du code, à structurer nos algorithmes de scraping et d’analyse, et à optimiser notre prédiction.
+
+
+\section{Environnement de travail}
+Nous avons principalement utilisé Microsoft Visual Studio Code comme éditeur de code. Cet outil nous a permis de développer, organiser et tester notre projet dans un environnement flexible et ergonomique. Grâce à ses nombreuses extensions et à sa prise en charge de plusieurs langages, il a facilité la gestion de nos scripts Python, l'intégration de bibliothèques, et le suivi du projet dans sa globalité.
+
+
+
+\section{Description du projet et objectifs}
+L’objectif principal est de créer un site web nommé Predictstock capable de récupérer les données historiques et en temps réel de trois actions boursières, puis de prédire leurs évolutions futures.\\
+
+Pour ce faire, notre modèle de prédiction s’appuie sur deux facteurs essentiels :\\
+
+Analyse de l’actualité dans les journaux : nous scrapons les articles financiers et plus larges afin de détecter des tendances. Cette analyse utilise une liste de mots-clés positifs ou négatifs qui indiquent si l’action est susceptible de monter ou descendre.\\
+
+Suivi de l’évolution passée et en temps réel du cours des actions : l’historique des cours, combiné aux données actuelles, sert à modéliser la tendance via des algorithmes d’apprentissage.
+
+	\subsection{Collecte et analyse de l’actualité dans les journaux}
+    Nous avons utilisé la bibliothèque feedparser pour collecter automatiquement les derniers articles publiés sur des sites d'information. Une fois les titres et descriptions extraits, nous avons mis en place une analyse de sentiment simple, reposant sur une liste de mots-clés à connotation positive ou négative. Cette liste permettait de déterminer si le ton général des articles était favorable ou défavorable aux marchés financiers.\\
+    
+    En fonction du nombre de mots positifs ou négatifs détectés, une tendance haussière ou baissière était alors attribuée à l'action concernée. Ce facteur textuel constituait ainsi l’un des éléments clés de notre prédiction du cours des actions.
+
+	\subsection{Suivi et analyse de l’évolution passée et en temps réel du cours des actions}
+    Dans ce projet, nous avons utilisé la bibliothèque Python yfinance, une interface conviviale pour accéder aux données financières fournies par Yahoo Finance. Cette bibliothèque présente l'avantage majeur de ne nécessiter aucune clé API ni inscription, ce qui en fait une solution simple et rapide à mettre en œuvre pour des projets de recherche, d'analyse ou de prototypage.\\
+    
+    Elle permet non seulement d'extraire les données historiques d’un titre boursier (telles que les prix d'ouverture, de clôture, les volumes échangés, etc.), mais également de récupérer des mises à jour quasi temps réel. Cette fonctionnalité est particulièrement utile dans le cadre d’analyses dynamiques, de modèles de prévision ou d’outils interactifs de suivi de marché.
+
+
+\section{Bibliothèques, Outils et technologies}
+
+Dans le cadre de ce projet, plusieurs bibliothèques Python ont été mobilisées afin de répondre aux exigences fonctionnelles et techniques du système développé. Celles-ci ont été choisies pour leur robustesse, leur facilité d’intégration et leur compatibilité avec l’écosystème Python, en particulier pour la gestion de l’interface web, la planification des tâches automatisées et le traitement de contenus dynamiques issus de sources externes.
+
+    \subsection{Flask – Développement de l’interface web
+}
+Le framework Flask a été utilisé pour la conception de l’interface web de l’application. Léger, modulaire et bien documenté, Flask est particulièrement adapté au prototypage rapide et à la mise en place d’applications web évolutives. Il permet de définir des routes HTTP, de gérer des templates HTML via le moteur Jinja2, et d'intégrer facilement des composants dynamiques (données, graphiques, formulaires).\\
+
+Dans notre projet, Flask a permis de :\\
+
+Créer une interface utilisateur intuitive pour la visualisation des données financières et des flux d’actualités ;\\
+
+Gérer les interactions utilisateurs via des formulaires et des requêtes HTTP ;\\
+
+Exposer les résultats de traitement (graphiques, prévisions, indicateurs) à travers une architecture web simple mais fonctionnelle.
+
+    \subsection{APScheduler et pytz – Automatisation et planification des tâches
+}
+Afin d’assurer une mise à jour régulière des données financières et des flux d’actualités sans intervention manuelle, nous avons intégré le module APScheduler(Advanced Python Scheduler). Cette bibliothèque offre une solution flexible pour la planification de tâches, permettant de définir des exécutions à des intervalles réguliers ou à des horaires spécifiques.
+Elle a été utilisée pour :\\
+
+Lancer automatiquement les opérations de scraping à intervalles définis (par exemple, toutes les heures) ;\\
+
+Gérer des tâches en arrière-plan, sans bloquer l’exécution principale de l’application ;\\
+
+
+Réduire les temps d’attente utilisateur grâce à la préactualisation des données.\\
+
+
+En complément, la bibliothèque pytz a été utilisée pour gérer les fuseaux horaires avec précision, en particulier afin de synchroniser les tâches avec les horaires d’ouverture des marchés financiers ou des sites sources. Cette gestion permet d’éviter les décalages temporels dus à l’utilisation de l’heure UTC par défaut dans Python.
+
+   \subsection{Feedparser – Traitement des flux RSS
+}
+Pour enrichir l'application avec des informations économiques en temps réel, nous avons intégré la bibliothèque feedparser, spécialisée dans le parsing de flux RSS et Atom. Cet outil permet une lecture structurée et rapide de contenus syndiqués provenant de sites d’information.
+Son utilisation nous a permis de :\\
+
+Collecter automatiquement des articles issus de sources fiables (par exemple : Les Échos, Reuters, Boursorama, etc.) ;\\
+
+
+Extraire des informations pertinentes telles que le titre, le résumé, la date de publication et le lien vers l’article complet ;\\
+
+
+
+Intégrer dynamiquement ces contenus dans l’interface web pour informer les utilisateurs des actualités pouvant influencer les marchés.\\
+
+
+
+L'intégration des flux RSS permet ainsi de croiser l’analyse technique avec le contexte économique, offrant un cadre d’interprétation plus riche pour l’utilisateur final.
+
+    
+
+
+\section{Travail réalisé}
+Le Travail réalisé dans le  projet peut se décomposer ainsi :\\
+
+Création du site (avec les différentes pages et surtout les courbes sur la page principale)\\
+
+Le Scraping (Scraping financier, Scraping de l’actualité et le Scraping des tweets)\\
+
+La Prédiction du cours des actions\\
+
+Voici des captures d’écrans de notre travail avec des commentaires pour comprendre ce qui a été fait à chaque fois !\\
+
+                            Le Site :
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{1.png}
+    \caption{Page d'accueil du site avec nos 3 entreprises}
+    \label{fig:monimage}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{3.png}
+    \caption{Historique des 3 entreprises sur 6 mois}
+    \label{fig:monimage}
+\end{figure}
+
+\newpage
+Le Scrappring :\\
+
+Partie financière\\
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{4.png}
+    \caption{Code partie 1/5}
+    \label{fig:monimage}
+\end{figure}
+
+\vspace{0.1cm}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{5.png}
+    \caption{Code partie 2/5}
+    \label{fig:monimage}
+\end{figure}
+
+\vspace{0.1cm}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{6.png}
+    \caption{Code partie 3/5}
+    \label{fig:monimage}
+\end{figure}
+
+\vspace{0.1cm}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{7.png}
+    \caption{Code partie 4/5}
+    \label{fig:monimage}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{8.png}
+    \caption{Code partie 5/5}
+    \label{fig:monimage}
+\end{figure}
+
+\vspace{0.1cm}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{9.png}
+    \caption{La liste des mots qui nous ont permi d'évaluer la positivité et la négativité des informations que nous avons scrappé dans l'actualité et les tweets pour prédire les cours de nos 3 actions}
+    \label{fig:monimage}
+\end{figure}
+
+\vspace{0.1cm}
+\clearpage
+Scraping de l'Actualité
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{10.png}
+    \caption{Exemple de fonction de la deuxième partie d’app.py pour afficher les articles récupérés par flux RSS pour lire tous les articles et permet d’afficher les trois premiers. (1/3)}
+    \label{fig:monimage}
+\end{figure}
+
+\vspace{0.1cm}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.63\textwidth]{11.png}
+    \caption{Evaluation des articles y compris ceux non vus par l'utilisateur (2/3)}
+    \label{fig:monimage}
+\end{figure}
+
+\vspace{0.1cm}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{12.png}
+    \caption{Initialisation d'un score d'actualité à 0 et calcul de la moyenne de l'article (3/3)}
+    \label{fig:monimage}
+\end{figure}
+\clearpage
+
+Voici le code sur le Scraping des tweets que nous aurions souhaité intégrer à notre programme.
+Malheureusement, pour des raisons que nous détaillerons dans la section suivante, cette intégration n’a pas pu aboutir. Même l’aide des intelligences artificielles ne nous a pas permis de surmonter ces obstacles… c’est dire à quel point le défi était complexe ! 
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{13.png}
+    \caption{Tentative d'utilisation de la bibliothèque snscrape avec Twitter  (1/2)}
+    \label{fig:monimage}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{14.png}
+    \caption{Analyse des sentiments et scraping des tweets (2/2)}
+    \label{fig:monimage}
+\end{figure}
+\clearpage
+
+Prédiction d'une Action\\
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{15.png}
+    \caption{Nous avons eu quelques soucis avec l'affichage qui aurait du être pour 2025 car cela n'a pas de sens de prédire le passé comme c'est le cas ici avec 2024 mais il faut en déduire que le programme suggère que le prix de l'action va augmenter}
+    \label{fig:monimage}
+\end{figure}
+
+En ce qui concerne la répartition du travail, nous avons travaillé en étroite collaboration tout au long du projet, en nous entraidant dès que nécessaire et en contribuant collectivement à l’ensemble des tâches. Chacun a ainsi touché à plusieurs aspects du développement. Toutefois, si l’on devait résumer les principales contributions : Mohammed s’est concentré sur le scraping des données financières et a réalisé une grande partie du site web, Ilyess a pris en charge le scraping de l’actualité ainsi que le développement de l’IA locale de prédiction, et Lucien a travaillé sur le scraping des tweets ainsi que sur la rédaction du rapport final.
+
+
+\newpage
+
+\section{Difficultés rencontrées}
+
+Nous avons rencontré plusieurs défis au cours du développement, notamment dans la collecte et le traitement des données.\\
+
+Initialement, nous avions prévu d’intégrer un troisième facteur de prédiction basé sur le scraping de tweets sur X (anciennement Twitter). Ce canal devait permettre d’analyser en temps réel le sentiment du marché exprimé sur les réseaux sociaux, en complément des deux autres facteurs. Le fonctionnement aurait été similaire à celui utilisé pour l’analyse des journaux, à savoir l’usage d’une liste de mots-clés positifs ou négatifs permettant de déterminer si le cours d’une action est susceptible d’augmenter ou de baisser selon le ton général des messages.\\
+
+Cependant, en raison des restrictions récentes imposées par la nouvelle politique d’accès à l’API de X, sous l’impulsion d’Elon Musk, et du renforcement des lois sur la protection des données, il est devenu impossible d’accéder légalement et gratuitement aux tweets nécessaires à cette analyse. Cette contrainte nous a donc obligés à abandonner cette piste, ce qui a limité notre prédiction aux deux autres facteurs restants.\\
+
+Nous avons également rencontré quelques difficultés techniques au début pour comprendre le fonctionnement de Flask, mais nous avons rapidement su le prendre en main.\\
+
+Un autre défi important a concerné notre IA en C, qui devait générer une courbe représentant la tendance des cours. Cette courbe, bien que fonctionnelle, affichait une marge d’erreur trop importante, la rendant inexploitable. Nous avions prévu de l’ajouter à la suite des courbes principales, mais malgré plusieurs essais, son intégration a échoué. Cette partie de notre prédiction a donc été abandonnée en grande partie, malgré l’aide de techniques d’intelligence artificielle.\\
+
+
+
+Enfin, lors de l’utilisation de la bibliothèque YFinance, nous avons été confrontés à un blocage du programme en raison d’un trop grand nombre de requêtes envoyées dans un court laps de temps. Pour contourner cette limite, nous avons ajouté des pauses de 5 secondes entre chaque requête, ce qui a ralenti l’exécution. Mais cela n'a pas fonctionné ; nous avons donc rajouté encore plus de pauses, mais le code se lançait au bout de 25 minutes. Cela n'a pas réglé le problème ; celui-ci est survenu subitement deux jours avant le rendu.\\
+
+Nous nous sommes donc acharnés à régler ce problème, mais nous ne disposions pas des ressources nécessaires. Même l'IA ne pouvait nous aider : les seules solutions étaient de tout refaire ou de payer une API plus puissante. Au dernier moment, nous avons trouvé une solution — enfin, nous le croyons — : il s'agissait de lancer le serveur Flask mais sans le relancer. Nous l'avons mise en place ; Ilyess l'a lancé deux fois d'affilée et cela a fonctionné. Mohamed l'a aussi lancé, et cela fonctionnait. Mais, au dernier moment, nous l'avons relancé et nous avons encore reçu le message d'erreur. Nous supposons donc que le module YFinance, qui dépend de Yahoo Finance, nous a bloqués pendant plusieurs heures ou jours. Nous espérons que vous pourrez le lancer.\\
+
+Mais si vous recevez une erreur "Too Many Requests" ou "Max retries exceeded", cela vient du blocage temporaire de l’API côté Yahoo. Dans ce cas, nous vous proposons de lancer le code sans la courbe pour pouvoir visiter le site. Pour ce faire, il faut aller dans le "if name" et mettre entre -"""- donc en commentaire python le code suivant :\\
+
+\begin{verbatim}
+for company in ['danone', 'loreal', 'airfrance']:
+    export_historique_csv(company, f'historique_{company}.csv')
+    lancer_ia(company)
+\end{verbatim}
+
+        
+Ensuite, lancez le code et vous aurez accès à tout sauf aux courbes principales.\\
+
+Nous avons été déçus de ne pas pouvoir régler cette erreur, nous nous excusons pour la gêne occasionnée. Pensez-vous pouvoir nous envoyer un mail pour nous expliquer si l'erreur commise était réparable facilement ? Merci d'avance.
+
+\section{Bilan}
+	\subsection{Conclusion}
+    Le projet Predistock nous a permis de développer un système combinant analyse de données et intelligence artificielle pour prédire les cours d’actions. L’expérience a été enrichissante et a confirmé l’intérêt d’un travail collaboratif structuré.
+	\subsection{Perspectives}
+    Dans le futur, il serait intéressant d’intégrer à nouveau le facteur réseau social lorsque les contraintes d’accès seront levées, ou d’explorer d’autres sources de données. Nous souhaitons aussi tester la fiabilité de notre modèle sur une période plus longue pour envisager des investissements réels.
+    \subsection{Rapports personnels}
+    
+    Lucien : "J’ai beaucoup apprécié travailler sur ce projet de scraping et de prédiction d’actions même si j'étais déçu de ne pas pouvoir faire fonctionner le scraping des tweets. Il m’a permis de mieux comprendre le fonctionnement des marchés financiers tout en mettant en pratique mes compétences en programmation, et surtout autour de l'utilisation de l’intelligence artificielle et du traitement de données. J’ai aussi trouvé enrichissant de devoir relever des défis techniques concrets. Travailler avec Mohammed et Ilyess a été très agréable : nous avons bien collaboré et su nous répartir les tâches efficacement. Cette expérience m’a donné envie de continuer à explorer ce domaine et peut-être me lancer dans d'autres projets assistés par IA."\\
+    
+
+    Mohamed : "Le projet s’est déroulé dans d’excellentes conditions. L’organisation du travail au sein du groupe a été claire et équilibrée, ce qui a favorisé une bonne coopération entre les membres. Chacun a su prendre en charge ses responsabilités, ce qui a permis d’avancer efficacement à chaque étape.
+Au-delà de l’aspect technique, ce projet a été particulièrement éducatif, tant sur le plan personnel que professionnel. Il m’a permis de mieux comprendre le fonctionnement des marchés financiers et de me familiariser concrètement avec le monde de la bourse. D’un point de vue technique, il a renforcé mes compétences en programmation Python, en développement web (frontend/backend) et en visualisation de données.
+C'était un projet à la fois intéressant et formateur, bien structuré et bien réparti, qui m’a permis de mettre en pratique des connaissances tout en en acquérant de nouvelles."
+\\
+
+    Ilyess : "J'ai aimé ce projet, car nous avons formé une bonne équipe. Il y avait une très bonne coordination, Mohamed était vraiment motivé : il s’est donné à fond, a fourni un travail conséquent et de qualité. Cela a été un plaisir de travailler avec lui. Lucien a rédigé un bon rapport que j’ai beaucoup apprécié, et il a persévéré pour faire fonctionner son code sur X, même si, malheureusement, cela n’a pas abouti. Mis à part cela, ce projet m’a vraiment plu, même si j’ai été frustré par la limitation imposée par Yahoo Finance et notre incapacité à résoudre ce problème. Le code se lance, mais pas tout le temps, car nous sommes parfois bloqués par YFinance. Malgré cela, le reste du projet m’a beaucoup intéressé." 
+	
+
+
+\newpage
+\section{Bibliographie}
+
+-Journal Le Monde (scraping de l'actualité dans les journaux)
+
+\newpage
+\section{Webographie}
+
+-ChatGPT (code général)\\
+
+-MistralAI (code général)\\
+
+-Youtube (vidéos sur le scraping)\\
+
+-Yahoo finance (scraping de bourse)\\
+
+-Twitter (tentative de scraping des tweets)
+
+\newpage
+\section{Annexes}
+\appendix
+\makeatletter
+\def\@seccntformat#1{Annexe~\csname the#1\endcsname:\quad}
+\makeatother
+	\section{Cahier des charges}
+    Objectif général\\
+    
+Développer une application web permettant le suivi en temps réel de l’évolution boursière de trois grandes entreprises françaises, tout en intégrant un système de prédiction basé sur l’intelligence artificielle. Cette IA s’appuie à la fois sur les données historiques de cours de bourse et sur l’analyse de l’actualité économique et géopolitique.\\
+
+Fonctionnalités attendues:\\
+
+Affichage des données boursières en temps réel
+ L’application doit permettre d’afficher en continu les cours boursiers actualisés de trois entreprises cotées :\\
+
+
+L'Oréal (OR.PA)\\
+
+Danone (BN.PA)\\
+
+Air France-KLM (AF.PA)\\
+
+ Ces données seront récupérées via l’API non officielle de Yahoo Finance (yfinance), sans nécessiter de clé d’API.\\
+
+
+Système de prédiction basé sur l’intelligence artificielle
+ L’application intégrera un moteur de prédiction capable d’estimer l’évolution future des actions des entreprises mentionnées, en s’appuyant sur :\\
+
+
+Les données historiques des cours boursiers (six derniers mois, fréquence hebdomadaire).\\
+
+Un score d’actualité attribué à chaque entreprise à partir de flux RSS (actualités économiques et géopolitiques), évalué via une analyse sémantique des mots-clés positifs et négatifs.
+ Ce score pondéré est utilisé comme variable complémentaire dans les fichiers de données servant à entraîner le modèle d’IA.\\
+
+Scraping et traitement de l’actualité économique
+ Les actualités pertinentes sont extraites automatiquement depuis un flux RSS (comme celui du Monde) puis analysées pour déterminer un impact estimé (positif, négatif ou neutre) sur chaque entreprise, à l’aide d’un dictionnaire de mots-clés pondérés.\\
+
+Visualisation et export\\
+ L’utilisateur pourra :\\
+
+Visualiser les données de prédiction sous forme de graphiques.\\
+
+Exporter les historiques (cours + score) au format CSV pour usage externe.\\
+
+Accéder à une interface simple et fluide construite avec Flask et le moteur de template Jinja2.\\
+
+\section{Exemple d'exécution du projet et Captures d'écran supplémentaires}
+\begin{figure}[htbp] \centering
+\includegraphics[width=1\textwidth]{16.png}
+\caption{Les trois commandes nous servent à créer les fichiers à partir de ceux d’app.py pour pouvoir générer la future courbe de prédiction, il faut le faire de temps en temps car l’IA se compare avec les valeurs précédentes}
+\label{fig:monimage}
+\end{figure}\\
+
+Ensuite nous lançons le serveur avec la commande suivante : python app.py
+
+Après plusieurs secondes, il faudra cliquer sur ce lien pour accéder au site: Running on http://127.0.0.1:5000
+
+\vspace{0.1cm}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{17.png}
+\caption{L’outil permet de désélectionner les entreprises dont on ne souhaite pas afficher les courbes, afin de ne conserver à l’écran que celles qui nous intéressent.}
+\label{fig:monimage}
+\end{figure}
+
+\vspace{0.1cm}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1\textwidth]{18.png}
+\caption{Quelques outils de calculs financiers}
+\label{fig:monimage}
+\end{figure}
+
+\vspace{0.1cm}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1\textwidth]{19.png}
+\caption{L'utilisateur peut choisir un pseudo et un avatar et s'il ne choisit pas de pseudo, il s'appelle "toto" par défaut}
+\label{fig:monimage}
+\end{figure}
+
+\newpage
+	\section{Manuel utilisateur}
+    La page Ressource de notre site fait office de manuel utilisateur. Elle contient un guide pour débutant ainsi que des liens utiles pour comprendre la bourse.\\
+    
+    Elle contient également des outils financiers dont une calculatrice, un convertisseur EUR/USD et un outil permettant de calculer le rendement d’une action en prenant en paramètres le prix d’achat et de revente de l’action.
+
+
+
+\end{document}
